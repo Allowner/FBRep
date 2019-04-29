@@ -55,6 +55,10 @@
               "version": "[2.2.0, )",
               "autoReferenced": true
             },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
             "xunit": {
               "target": "Package",
               "version": "[2.4.0, )"

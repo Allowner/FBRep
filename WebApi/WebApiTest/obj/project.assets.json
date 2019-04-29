@@ -9912,6 +9912,7 @@
     ".NETCoreApp,Version=v2.2": [
       "Microsoft.NET.Test.Sdk >= 16.0.1",
       "Microsoft.NETCore.App >= 2.2.0",
+      "System.Configuration.ConfigurationManager >= 4.5.0",
       "WebApi >= 1.0.0",
       "xunit >= 2.4.0",
       "xunit.runner.visualstudio >= 2.4.0"
@@ -9971,6 +9972,10 @@
             "target": "Package",
             "version": "[2.2.0, )",
             "autoReferenced": true
+          },
+          "System.Configuration.ConfigurationManager": {
+            "target": "Package",
+            "version": "[4.5.0, )"
           },
           "xunit": {
             "target": "Package",

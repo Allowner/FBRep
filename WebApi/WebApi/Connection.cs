@@ -7,6 +7,10 @@ namespace WebApi
 {
     public class Connection
     {
+        public string AppId { get; set; }
+
+        public string AppSecret { get; set; }
+
         public string PageAccessToken { get; set; }
     }
 }

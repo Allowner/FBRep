@@ -8,7 +8,6 @@ namespace WebApi
     public class PostBody
     {
         public string FilePath { get; set; }
-        public string Caption { get; set; }
         public string DescriptionAndHashtags { get; set; }
     }
 }

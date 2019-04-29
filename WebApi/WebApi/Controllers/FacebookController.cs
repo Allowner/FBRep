@@ -5,6 +5,8 @@ using System.Dynamic;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Options;
+using WebApi.Services;
+using System.Threading.Tasks;
 
 namespace WebApi.Controllers
 {
@@ -14,32 +16,19 @@ namespace WebApi.Controllers
     {
         private readonly FacebookClient client;
         private readonly Connection access_token;
+        private readonly IService service;
 
-        public FacebookController(IOptions<Connection> options)
+        public FacebookController(IOptions<Connection> options, IService service)
         {
+            this.service = service ?? throw new ArgumentException(nameof(service));
             access_token = options.Value ?? throw new ArgumentException(nameof(options));
             client = new FacebookClient(access_token.PageAccessToken);
-            Console.WriteLine(access_token.PageAccessToken);
         }
 
         [HttpPost]
-        public void Post([FromBody] PostBody info)
+        public async Task PostAsync([FromBody] PostBody info)
         {
-            if (!System.IO.File.Exists(info.FilePath))
-            {
-                throw new FileNotFoundException("Filepath is invalid.");
-            }
-
-            string attachementPath = info.FilePath;
-            using (var file = new FacebookMediaStream
-            {
-                ContentType = "image/jpeg",
-                FileName = System.IO.Path.GetFileName(attachementPath)
-            }.SetValue(System.IO.File.OpenRead(attachementPath)))
-            {
-                dynamic result = client.Post("veryunusualname/photos",
-                new { message = info.DescriptionAndHashtags, caption = info.Caption, file });
-            }
+            await service.PostPhotoAsync(info, client);
         }
     }
 }
@@ -84,4 +73,24 @@ namespace WebApi.Controllers
             upload.Add("name", info.Caption);
             upload.Add(info.FileName, mediaObject);
 
-            dynamic res = client.Post("me/feed", upload) as JsonObject;*/
+            dynamic res = client.Post("me/feed", upload) as JsonObject;
+            
+     
+     
+     
+     
+     
+     
+     client = new FacebookClient();
+            var result = client.Get("oauth/", new
+            {
+                client_id = access_token.AppId,
+                redirect_uri = "https://localhost:44313/signin-facebook/",
+                state = "{st=state123abc,ds=123456789}"
+            });
+
+            var pAccess = client.Get($"veryunusualname?fields={access_token.AppId}", new
+            {
+                client_id = access_token.AppId,
+                client_secret = access_token.AppSecret
+            });*/
