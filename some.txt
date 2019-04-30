@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/43237062/how-to-get-user-access-token-in-a-web-api-using-facebook-c-sharp-sdk
+https://stackoverflow.com/questions/42565466/asp-net-core-facebook-authentication-middleware-user-picture
+https://stackoverflow.com/questions/39868447/receive-facebook-graph-api-access-token-after-external-login-in-net-mvc-core !!
