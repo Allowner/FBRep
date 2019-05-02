@@ -16,3 +16,5 @@ C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\obj\Debug\netcoreap
 C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\obj\Debug\netcoreapp2.2\WebApiTest.csproj.CopyComplete
 C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\obj\Debug\netcoreapp2.2\WebApiTest.dll
 C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\obj\Debug\netcoreapp2.2\WebApiTest.pdb
+C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\bin\Debug\netcoreapp2.2\WebApi.Views.dll
+C:\Users\Usevalad_Hardziyenka\source\repos\WebApi\WebApiTest\bin\Debug\netcoreapp2.2\WebApi.Views.pdb

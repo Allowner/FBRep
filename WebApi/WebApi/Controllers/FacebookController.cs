@@ -1,12 +1,10 @@
 ﻿using System;
 using Facebook;
 using Microsoft.AspNetCore.Mvc;
-using System.Dynamic;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.Options;
 using WebApi.Services;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WebApi.Controllers
 {
@@ -30,6 +28,21 @@ namespace WebApi.Controllers
         {
             await service.PostPhotoAsync(info, client);
         }
+
+        /*[Route("signin")]
+        public IActionResult SignIn()
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = "/" });
+        }
+
+        [Route("check")]
+        public async Task<object> CheckAsync()
+        {
+            string token = await AuthenticationHttpContextExtensions.GetTokenAsync(HttpContext, "access_token");
+            //FacebookClient client = new FacebookClient(token);
+            //string result = client.Get("me/?fields=id,name").ToString();
+            return token;
+        }*/
     }
 }
 
