@@ -4,83 +4,145 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System;
 using Windows.Security.Authentication.Web;
-using Windows.Foundation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+using Microsoft.Toolkit.Uwp.Services.Facebook;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Globalization.DateTimeFormatting;
+using Windows.UI.Popups;
 
 namespace FirstUWP
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
+        private static string serverUrl;
 
-        private static string serverUrl = "http://localhost:62058/";
+        private static string pageId;
+
+        private static string accessToken;
+
+        private static readonly StorageFolder appFolder = 
+            Windows.ApplicationModel.Package.Current.InstalledLocation;
+
+        private static readonly string rootPath = 
+            AppDomain.CurrentDomain.BaseDirectory;
+
+
         public MainPage()
         {
             this.InitializeComponent();
         }
 
-        private async void button_ClickAsync(object sender, RoutedEventArgs e)
+        private async void PageLoaded(object sender, RoutedEventArgs e)
         {
+            StorageFolder folder = await appFolder.GetFolderAsync("Configuration");
+            StorageFile file = await folder.GetFileAsync("data.txt");
+            List<string> config = new List<string>(await FileIO.ReadLinesAsync(file));
+            pageId = config[0];
+            serverUrl = config[1];
+            accessToken = config[2];
+        }
+
+        private async void ButtonPostAsync(object sender, RoutedEventArgs e)
+        {
+            Error.Visibility = Visibility.Collapsed;
+            MessageDialog dialog = null;
+
             try
             {
-                string urlString = null;
-                
-                using (HttpClient client = new HttpClient())
-                {
-                    urlString = client.GetStringAsync($"{serverUrl}fb").Result;
-                }
-
-                Uri startUri = new Uri(urlString);
-                Uri endUri = new Uri(serverUrl);
-
-                WebAuthenticationResult WebAuthenticationResult = await WebAuthenticationBroker.AuthenticateAsync(
-                                                        WebAuthenticationOptions.None,
-                                                        startUri,
-                                                        endUri);
-                string token = null;
-                if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
-                {
-                    token = OutputToken(WebAuthenticationResult.ResponseData);
-                }
-                else if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
-                {
-                    throw new Exception("HTTP Error returned by AuthenticateAsync() : " + WebAuthenticationResult.ResponseErrorDetail.ToString());
-                }
-                else
-                {
-                    OutputToken("Error returned by AuthenticateAsync() : " + WebAuthenticationResult.ResponseStatus.ToString());
-                }
-
-                using (HttpClient client = new HttpClient())
-                {
-                    urlString = client.GetStringAsync($"{serverUrl}fb/ptoken?userToken={token}&pagename=683744845377993").Result;
-                    client.BaseAddress = new Uri("http://localhost:6740");
-                    var content = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("PageNameOrId", "login"),
-                        new KeyValuePair<string, string>("PageAccessToken", "login"),
-                        new KeyValuePair<string, string>("DescriptionAndHashtags", "login"),
-                        new KeyValuePair<string, string>("FilePath", "login")
-                    });
-
-                    var result = await client.PostAsync("/api/Membership/exists", content);
-                    string resultContent = await result.Content.ReadAsStringAsync();
-                    Console.WriteLine(resultContent);
-                }
+                await PostImageAsync();
+                dialog = new MessageDialog("Image was successfully posted.");
             }
-            catch (Exception)
+            catch (HttpRequestException)
             {
+                dialog = new MessageDialog("Can't post image, server not available.");
+            }
+            catch (ArgumentException)
+            {
+                dialog = new MessageDialog("Server received wrong parameters.");
+            }
+
+            await dialog.ShowAsync();
+        }
+
+        /*private async Task LogInAsync()
+        {
+            string urlString = null;
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(serverUrl);
+            urlString = await client.GetStringAsync("fb");
+
+            Uri startUri = new Uri(urlString);
+            Uri endUri = new Uri(serverUrl);
+
+            WebAuthenticationResult WebAuthenticationResult =
+                await WebAuthenticationBroker.AuthenticateAsync(
+                    WebAuthenticationOptions.None, startUri, endUri);
+
+            if (WebAuthenticationResult.ResponseStatus ==
+                WebAuthenticationStatus.Success)
+            {
+                access_token = OutputToken(WebAuthenticationResult.ResponseData);
+            }
+            else
+            {
+                throw new AuthenticationException("Error trying to log in.");
+            }
+
+            access_token = await client.GetStringAsync(
+                $"fb/ptoken?userToken={access_token}&pagename={tb1.Text}");
+
+            client.Dispose();
+        }*/
+
+        private async Task PostImageAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(serverUrl);
+
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("PageNameOrId", pageId),
+                    new KeyValuePair<string, string>("PageAccessToken", accessToken),
+                    new KeyValuePair<string, string>("DescriptionAndHashtags",
+                        desription.Text),
+                    new KeyValuePair<string, string>("FilePath", $"{rootPath}{GetImageName()}")
+                });
+
+                var result = await client.PostAsync("fb/post", content);
+                string resultContent = result.StatusCode.ToString();
+                if (resultContent == "InternalServerError")
+                {
+                    throw new ArgumentException("Wrong arguments.");
+                }
             }
         }
 
-        private string OutputToken(String stringUri)
+        private void SelfieClick(object sender, RoutedEventArgs e)
+        {
+            post.Visibility = Visibility.Visible;
+            desription.Visibility = Visibility.Visible;
+            image.Visibility = Visibility.Visible;
+        }
+
+        private string GetImageName()
+        {
+            BitmapImage bitMap = image.Source as BitmapImage;
+            Uri uri = bitMap?.UriSource;
+            string path = bitMap.UriSource.AbsolutePath.
+                Substring(1).Replace("/", "\\");
+
+            return path;
+        }
+
+        /*private string OutputToken(String stringUri)
         {
             int first = stringUri.IndexOf('=') + 1;
             int last = stringUri.IndexOf('&');
             return stringUri.Substring(first, last - first);
-        }
+        }*/
     }
 }

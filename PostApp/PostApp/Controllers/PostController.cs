@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Facebook;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PostApp.Models;
@@ -37,19 +36,18 @@ namespace PostApp.Controllers
         [Route("post")]
         public async Task CheckAsync(PostBody info)
         {
-            string token = await AuthenticationHttpContextExtensions.GetTokenAsync(HttpContext, "access_token");
-            string pageToken = GetBusinessPageAccessToken(token, info.PageNameOrId);
-            if (pageToken == null)
+            if (info.PageAccessToken == null)
             {
-                throw new ArgumentException(nameof(pageToken));
+                throw new ArgumentException(nameof(info.PageAccessToken));
             }
 
-            FacebookClient client = new FacebookClient(pageToken);
+            FacebookClient client = new FacebookClient(info.PageAccessToken);
+
             await service.PostPhotoAsync(info, client);
         }
 
         [Route("ptoken")]
-        private string GetBusinessPageAccessToken(string userToken, string pagename)
+        public string GetBusinessPageAccessToken(string userToken, string pagename)
         {
             FacebookClient fb = new FacebookClient(userToken);
             var result = fb.Get("/me/accounts");

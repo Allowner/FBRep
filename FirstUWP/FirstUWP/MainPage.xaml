@@ -5,12 +5,15 @@
     xmlns:local="using:FirstUWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d" Loaded="PageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="900" Height="522">
 
     <Grid>
-        <Button x:Name="messageButton" Width="120" Height="40" Content="Кнопка" 
-                HorizontalAlignment="Center" Click="button_ClickAsync" />
-        <TextBox x:Name="tb1" HorizontalAlignment="Center" Margin="0,419,0,0" Text="" VerticalAlignment="Top" Width="120" Height="38"/>
+        <Button x:Name="post" Width="120" Height="40" Content="Post&#xD;&#xA;" Click="ButtonPostAsync" Margin="48,203,0,0" VerticalAlignment="Top" Visibility="Collapsed"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="282" Margin="352,47,0,0" VerticalAlignment="Top" Width="548" Source="Assets/water.png" Visibility="Collapsed"/>
+        <TextBlock x:Name="Error" HorizontalAlignment="Left" Margin="44,252,0,0" Text="Oops, something went wrong" TextWrapping="Wrap" VerticalAlignment="Top" Height="45" Width="119" TextAlignment="Center" Visibility="Collapsed"/>
+        <Button x:Name="makeSelfie" Content="Make selfie" Margin="390,474,0,0" VerticalAlignment="Top" Width="123" Click="SelfieClick"/>
+        <TextBox x:Name="desription" HorizontalAlignment="Left" Margin="47,46,0,0" VerticalAlignment="Top" Height="149" Width="303"
+                 TextWrapping="Wrap" AcceptsReturn="True" PlaceholderText="Description and hashtags" Visibility="Collapsed"/>
     </Grid>
 </Page>
